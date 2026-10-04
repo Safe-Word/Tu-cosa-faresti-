@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Tu cosa faresti? - Educazione civica</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(720px, 92%);
+      margin: 40px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 30px;
+    }
+
+    h2 {
+      font-size: 23px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .info {
+      background: #eef4ff;
+      border-left: 5px solid #356ae6;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .main-button {
+      border: none;
+      background: #356ae6;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .main-button:hover {
+      background: #2856c4;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 9px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: #356ae6;
+      transition: width 0.3s;
+    }
+
+    .scenario {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 22px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 10px 0;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: #356ae6;
+      background: #f5f8ff;
+    }
+
+    .option:disabled {
+      cursor: default;
+    }
+
+    .correct {
+      border-color: #31945a !important;
+      background: #eaf7ef !important;
+    }
+
+    .wrong {
+      border-color: #c94c4c !important;
+      background: #fff0f0 !important;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #f3f4f6;
+    }
+
+    .feedback.correct-feedback {
+      background: #eaf7ef;
+      border-left: 5px solid #31945a;
+    }
+
+    .feedback.wrong-feedback {
+      background: #fff0f0;
+      border-left: 5px solid #c94c4c;
+    }
+
+    .score {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .reflection {
+      background: #fff8e6;
+      border-left: 5px solid #e0a11b;
+      padding: 18px;
+      border-radius: 8px;
+      margin-top: 25px;
+    }
+
+    .reflection p {
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin: 20px auto;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .scenario {
+        font-size: 18px;
+      }
+
+      .option {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- PAGINA INIZIALE -->
+  <div id="intro" class="card">
+
+    <h1>⚖️ Tu cosa faresti?</h1>
+
+    <p class="subtitle">
+      Educazione civica · Regole, responsabilità ed economia circolare
+    </p>
+
+    <div class="info">
+      <strong>Come funziona?</strong><br><br>
+      Ti verranno presentate 6 situazioni della vita quotidiana.
+      Per ogni situazione dovrai scegliere la risposta che ritieni
+      più responsabile.
+      <br><br>
+      Dopo ogni risposta scoprirai se hai scelto correttamente e
+      perché.
+    </div>
+
+    <p>
+      L'obiettivo è capire il rapporto tra:
+    </p>
+
+    <p style="text-align:center; font-weight:bold;">
+      REGOLA → RESPONSABILITÀ → COMPORTAMENTO → CONSEGUENZE
+    </p>
+
+    <button class="main-button" onclick="startQuiz()">
+      Inizia l'attività
+    </button>
+
+  </div>
+
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card hidden">
+
+    <div class="top-bar">
+      <span id="progressText">Situazione 1 di 6</span>
+      <span id="scoreText">Punteggio: 0</span>
+    </div>
+
+    <div class="progress-container">
+      <div id="progressBar" class="progress"></div>
+    </div>
+
+    <div id="scenario" class="scenario"></div>
+
+    <div id="options"></div>
+
+    <div id="feedback" class="feedback hidden"></div>
+
+    <br>
+
+    <button
+      id="nextButton"
+      class="main-button hidden"
+      onclick="nextQuestion()">
+      Situazione successiva
+    </button>
+
+  </div>
+
+
+  <!-- RISULTATO -->
+  <div id="result" class="card hidden">
+
+    <h1>🎯 Attività completata!</h1>
+
+    <p id="finalScore" class="score"></p>
+
+    <p id="finalMessage"></p>
+
+    <div class="reflection">
+
+      <h3>Riflessione finale</h3>
+
+      <p>
+        Completa sul quaderno:
+      </p>
+
+      <p>
+        “Un mio comportamento può avere conseguenze sugli altri quando...”
+      </p>
+
+      <p>
+        “Una regola è importante perché...”
+      </p>
+
+      <p>
+        “Un comportamento che posso migliorare nella gestione dei rifiuti è...”
+      </p>
+
+    </div>
+
+    <br>
+
+    <button class="main-button" onclick="restartQuiz()">
+      Ricomincia
+    </button>
+
+  </div>
+
+  <footer>
+    Educazione civica · Attività individuale
+  </footer>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+  {
+    question:
+      "Sei al parco e hai finito una bottiglietta d'acqua. Il cestino è pieno e non ce ne sono altri nelle vicinanze. Cosa fai?",
+
+    answers: [
+      "La lascio vicino al cestino.",
+      "La porto con me e la butto quando trovo un contenitore adatto.",
+      "La lascio per terra perché qualcuno la raccoglierà."
+    ],
+
+    correct: 1,
+
+    explanation:
+      "La scelta più responsabile è portarla con te. Il fatto che il cestino sia pieno non elimina la tua responsabilità."
+  },
+
+  {
+    question:
+      "Un compagno getta una lattina per terra e dice: «Tanto è solo una». Cosa fai?",
+
+    answers: [
+      "Non dico nulla.",
+      "Gli faccio notare che non è corretto.",
+      "Faccio finta di non aver visto."
+    ],
+
+    correct: 1,
+
+    explanation:
+      "Un singolo rifiuto può sembrare poco, ma se tutti ragionassero allo stesso modo il problema diventerebbe collettivo."
+  },
+
+  {
+    question:
+      "Hai una maglietta che non usi più, ma è ancora in buone condizioni. Quale scelta è più coerente con l'economia circolare?",
+
+    answers: [
+      "La butto subito.",
+      "Cerco di riutilizzarla, regalarla o darle un nuovo utilizzo.",
+      "La lascio in un angolo e ne compro un'altra."
+    ],
+
+    correct: 1,
+
+    explanation:
+      "Riutilizzare e prolungare la vita dei prodotti riduce la produzione di nuovi rifiuti e il consumo di risorse."
+  },
+
+  {
+    question:
+      "Le tue cuffie non funzionano più, ma potrebbero essere riparate. Cosa sarebbe più coerente con l'economia circolare?",
+
+    answers: [
+      "Le butto e ne compro subito un paio nuovo.",
+      "Provo a farle riparare.",
+      "Le lascio in un cassetto per sempre."
+    ],
+
+    correct: 1,
+
+    explanation:
+      "La riparazione permette di prolungare la vita di un prodotto e ridurre il consumo di nuove risorse."
+  },
+
+  {
+    question:
+      "A scuola esiste una regola sulla raccolta differenziata. Perché non basta dire «io faccio quello che voglio con il mio rifiuto»?",
+
+    answers: [
+      "Perché le nostre azioni possono avere conseguenze sugli altri e sull'ambiente.",
+      "Perché tutte le regole servono soltanto a punire.",
+      "Perché i rifiuti non hanno conseguenze."
+    ],
+
+    correct: 0,
+
+    explanation:
+      "Le regole servono anche a rendere possibile una convivenza ordinata e a tutelare beni comuni come l'ambiente."
+  },
+
+  {
+    question:
+      "Un ragazzo dice: «Se tutti gli altri buttano i rifiuti per terra, non cambia niente se lo faccio anch'io». Sei d'accordo?",
+
+    answers: [
+      "Sì, perché una persona da sola non cambia nulla.",
+      "No, perché il comportamento di ogni persona contribuisce al risultato collettivo.",
+      "Sì, perché la responsabilità è sempre di qualcun altro."
+    ],
+
+    correct: 1,
+
+    explanation:
+      "La responsabilità è anche individuale: tante piccole azioni possono produrre conseguenze importanti sulla collettività."
+  }
+
+];
+
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+
+function startQuiz() {
+
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+
+  showQuestion();
+}
+
+
+function showQuestion() {
+
+  answered = false;
+
+  const question = questions[currentQuestion];
+
+  document.getElementById("progressText").textContent =
+    "Situazione " +
+    (currentQuestion + 1) +
+    " di " +
+    questions.length;
+
+  document.getElementById("scoreText").textContent =
+    "Punteggio: " + score;
+
+  document.getElementById("progressBar").style.width =
+    ((currentQuestion) / questions.length * 100) + "%";
+
+
+  document.getElementById("scenario").textContent =
+    question.question;
+
+
+  const optionsContainer =
+    document.getElementById("options");
+
+  optionsContainer.innerHTML = "";
+
+
+  question.answers.forEach((answer, index) => {
+
+    const button = document.createElement("button");
+
+    button.className = "option";
+
+    button.textContent =
+      String.fromCharCode(65 + index) +
+      ". " +
+      answer;
+
+    button.onclick = function() {
+
+      selectAnswer(index, button);
+
+    };
+
+    optionsContainer.appendChild(button);
+
+  });
+
+
+  document.getElementById("feedback").className =
+    "feedback hidden";
+
+  document.getElementById("nextButton").classList.add("hidden");
+
+}
+
+
+function selectAnswer(index, selectedButton) {
+
+  if (answered) return;
+
+  answered = true;
+
+  const question = questions[currentQuestion];
+
+  const buttons =
+    document.querySelectorAll(".option");
+
+
+  buttons.forEach((button, i) => {
+
+    button.disabled = true;
+
+    if (i === question.correct) {
+      button.classList.add("correct");
+    }
+
+  });
+
+
+  const feedback =
+    document.getElementById("feedback");
+
+
+  if (index === question.correct) {
+
+    score++;
+
+    selectedButton.classList.add("correct");
+
+    feedback.className =
+      "feedback correct-feedback";
+
+    feedback.innerHTML =
+      "<strong>✓ Risposta corretta!</strong><br><br>" +
+      question.explanation;
+
+  }
+
+  else {
+
+    selectedButton.classList.add("wrong");
+
+    feedback.className =
+      "feedback wrong-feedback";
+
+    feedback.innerHTML =
+      "<strong>✗ Non proprio.</strong><br><br>" +
+      question.explanation;
+
+  }
+
+
+  document.getElementById("scoreText").textContent =
+    "Punteggio: " + score;
+
+
+  document.getElementById("progressBar").style.width =
+    ((currentQuestion + 1) / questions.length * 100) + "%";
+
+
+  const nextButton =
+    document.getElementById("nextButton");
+
+  nextButton.textContent =
+    currentQuestion === questions.length - 1
+      ? "Vedi il risultato"
+      : "Situazione successiva";
+
+  nextButton.classList.remove("hidden");
+
+}
+
+
+function nextQuestion() {
+
+  if (currentQuestion === questions.length - 1) {
+
+    showResult();
+
+  }
+
+  else {
+
+    currentQuestion++;
+
+    showQuestion();
+
+  }
+
+}
+
+
+function showResult() {
+
+  document.getElementById("quiz").classList.add("hidden");
+
+  document.getElementById("result").classList.remove("hidden");
+
+
+  document.getElementById("finalScore").textContent =
+    "Hai ottenuto " + score + " punti su " + questions.length + ".";
+
+
+  let message;
+
+
+  if (score === 6) {
+
+    message =
+      "Ottimo! Hai compreso molto bene il legame tra regole, responsabilità, comportamento individuale ed economia circolare.";
+
+  }
+
+  else if (score >= 4) {
+
+    message =
+      "Buon lavoro! Hai compreso i concetti principali. Prova ora a riflettere sulle conseguenze delle tue scelte quotidiane.";
+
+  }
+
+  else {
+
+    message =
+      "Rifletti ancora sul rapporto tra comportamento individuale, regole e conseguenze sulla collettività.";
+
+  }
+
+
+  document.getElementById("finalMessage").textContent =
+    message;
+
+}
+
+
+function restartQuiz() {
+
+  currentQuestion = 0;
+  score = 0;
+
+  document.getElementById("result").classList.add("hidden");
+
+  document.getElementById("quiz").classList.remove("hidden");
+
+  showQuestion();
+
+}
+
+</script>
+
+</body>
+</html>
